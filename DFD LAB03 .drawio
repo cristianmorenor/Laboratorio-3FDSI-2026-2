@@ -1,0 +1,79 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="DFD - Lab 3" id="6T_lZ2Qgo8OTlvz5JzPq">
+    <mxGraphModel dx="964" dy="633" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="85vR576Nvzd3GPd6pC5m-1" parent="1" style="text;html=1;fontSize=16;fontStyle=1;align=left;verticalAlign=top;" value="DFD Laboratorio 3 — NetOps Automation Console (Opción 2, HTTP sin autenticación)" vertex="1">
+          <mxGeometry height="30" width="900" x="30" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;strokeColor=#B85450;fillColor=none;verticalAlign=top;align=left;fontColor=#B85450;fontStyle=1;spacingTop=6;spacingLeft=6;fontSize=12;" value="Frontera de confianza 1: Red no confiable (LAB_CIDR) → Host" vertex="1">
+          <mxGeometry height="340" width="690" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;strokeColor=#6C8EBF;fillColor=none;verticalAlign=top;align=left;fontColor=#6C8EBF;fontStyle=1;spacingTop=6;spacingLeft=6;fontSize=12;" value="Frontera de confianza 2: Proceso → Sistema de archivos y logs" vertex="1">
+          <mxGeometry height="340" width="320" x="940" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-4" parent="1" style="shape=umlActor;whiteSpace=wrap;html=1;outlineConnect=0;verticalLabelPosition=bottom;verticalAlign=top;" value="" vertex="1">
+          <mxGeometry height="60" width="30" x="20" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-5" parent="1" style="text;html=1;fontSize=11;align=center;" value="Analista Red Team" vertex="1">
+          <mxGeometry height="20" width="120" x="20" y="178" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="Estación Kali&#xa;(nmap / curl / ZAP pasivo)" vertex="1">
+          <mxGeometry height="80" width="180" x="180" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-7" parent="1" style="shape=umlActor;whiteSpace=wrap;html=1;outlineConnect=0;verticalLabelPosition=bottom;verticalAlign=top;" value="" vertex="1">
+          <mxGeometry height="60" width="30" x="165" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-8" parent="1" style="text;html=1;fontSize=11;align=center;" value="Analista Blue Team" vertex="1">
+          <mxGeometry height="20" width="120" x="120" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="Estación de monitoreo&#xa;(tcpdump / Wireshark)" vertex="1">
+          <mxGeometry height="80" width="190" x="350" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-10" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" value="Nginx :80&#xa;(sin autenticación, sin TLS)" vertex="1">
+          <mxGeometry height="100" width="170" x="740" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-11" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;left=0;bottom=1;right=0;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="Archivos del sitio&#xa;index.html, device-inventory.txt,&#xa;scripts-catalog.txt, execution-log.txt" vertex="1">
+          <mxGeometry height="80" width="250" x="980" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-12" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;left=0;bottom=1;right=0;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="access.log / error.log&#xa;(telemetría defensiva)" vertex="1">
+          <mxGeometry height="80" width="250" x="980" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-13" edge="1" parent="1" source="85vR576Nvzd3GPd6pC5m-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" target="85vR576Nvzd3GPd6pC5m-6" value="ejecuta comandos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-14" edge="1" parent="1" source="85vR576Nvzd3GPd6pC5m-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" target="85vR576Nvzd3GPd6pC5m-10" value="GET / , GET /device-inventory.txt&#xa;(HTTP en claro)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-15" edge="1" parent="1" source="85vR576Nvzd3GPd6pC5m-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;exitX=0;exitY=0.7;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;" target="85vR576Nvzd3GPd6pC5m-6" value="200/403/404 + contenido&#xa;(sin cifrar)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-16" edge="1" parent="1" source="85vR576Nvzd3GPd6pC5m-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="85vR576Nvzd3GPd6pC5m-11" value="lee">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-17" edge="1" parent="1" source="85vR576Nvzd3GPd6pC5m-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="85vR576Nvzd3GPd6pC5m-12" value="escribe evento">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-18" edge="1" parent="1" source="85vR576Nvzd3GPd6pC5m-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" target="85vR576Nvzd3GPd6pC5m-9" value="opera">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-19" edge="1" parent="1" source="85vR576Nvzd3GPd6pC5m-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;dashed=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.95;entryDx=0;entryDy=0;" target="85vR576Nvzd3GPd6pC5m-10" value="captura pasiva de paquetes (mirror)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-20" edge="1" parent="1" source="85vR576Nvzd3GPd6pC5m-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;dashed=1;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0;entryY=0.8;entryDx=0;entryDy=0;" target="85vR576Nvzd3GPd6pC5m-12" value="tail / grep / awk&#xa;(correlación)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-21" parent="1" style="text;html=1;fontSize=10;fontColor=#B85450;align=left;" value="H4 Tampering: sin TLS, un intermediario&#xa;podría alterar el tráfico" vertex="1">
+          <mxGeometry height="40" width="300" x="30" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-22" parent="1" style="text;html=1;fontSize=10;fontColor=#B85450;align=left;" value="H1/H2 Information Disclosure: contenido y&#xa;headers visibles en tránsito" vertex="1">
+          <mxGeometry height="40" width="300" x="360" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="85vR576Nvzd3GPd6pC5m-23" parent="1" style="text;html=1;fontSize=10;fontColor=#6C8EBF;align=left;" value="H3 Repudiation: sin correlación temporal no&#xa;se atribuyen solicitudes a un actor" vertex="1">
+          <mxGeometry height="40" width="320" x="940" y="420" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
