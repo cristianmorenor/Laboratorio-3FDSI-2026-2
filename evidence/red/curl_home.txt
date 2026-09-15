@@ -1,0 +1,25 @@
+HTTP/1.1 200 OK
+Server: nginx/1.28.3 (Ubuntu)
+Date: Tue, 15 Sep 2026 02:00:51 GMT
+Content-Type: text/html
+Content-Length: 606
+Last-Modified: Thu, 03 Sep 2026 03:40:07 GMT
+Connection: keep-alive
+ETag: "6a98ec17-25e"
+Accept-Ranges: bytes
+
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>NetOps Automation Console</title></head>
+<body>
+  <h1>NetOps Automation Console</h1>
+  <p>Environment: LAB</p>
+  <p>Owner: Blue Team</p>
+  <p>Prototipo: Ejecución controlada de scripts remotos en equipos de red (solo lectura y simulación).</p>
+  <ul>
+    <li><a href="/device-inventory.txt">Inventario de dispositivos (demostración)</a></li>
+    <li><a href="/scripts-catalog.txt">Catálogo de scripts aprobados (solo lectura)</a></li>
+    <li><a href="/execution-log.txt">Log de ejecuciones simuladas</a></li>
+  </ul>
+</body>
+</html>
