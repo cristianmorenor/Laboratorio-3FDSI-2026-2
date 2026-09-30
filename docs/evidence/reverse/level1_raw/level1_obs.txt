@@ -1,0 +1,12 @@
+$ ./crackme_level1
+=== FDSI CrackMe Level 1 ===
+Uso: ./crackme_level1 <password>
+$ ./crackme_level1 prueba
+=== FDSI CrackMe Level 1 ===
+Access denied.
+exit code sin argumento: 1 | exit code con prueba: 2 (observados antes)
+$ ./crackme_level1 REDTEAM-101
+=== FDSI CrackMe Level 1 ===
+Access granted.
+FLAG{strings_are_evidence}
+exit code: 0
