@@ -1,0 +1,86 @@
+# BASELINE FORENSE - FDSI Guia 2 Reverse Engineering
+# Fecha (UTC): 2026-09-30T22:41:00Z
+# Entorno: Linux 6.19.14+kali-amd64 x86_64
+
+## $ file crackme_level1 crackme_level2 crackme_level2_stripped
+crackme_level1:          ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=01c8816fe4b791d9ded9a73e62f8f443464716ba, for GNU/Linux 3.2.0, with debug_info, not stripped
+crackme_level2:          ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=3eb5b89d4b93c6773577b448cd1cc98400e2196b, for GNU/Linux 3.2.0, with debug_info, not stripped
+crackme_level2_stripped: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=df25a1fa020d404f3512421bfcf8c89b417e8554, for GNU/Linux 3.2.0, stripped
+
+## $ sha256sum crackme_level1 crackme_level2 crackme_level2_stripped
+61e980febe84b1003b5a3b641468e915b984f7fdd835be9828af54233f88c68c  crackme_level1
+8dc5931dfbf74d7371de9ca9ed8cc57bfe0af4521346202dcd1c701dd8b6f4e5  crackme_level2
+c8e638741272a87ee3b30fe8878898c1aa977e6a879a1ec0b271034b5bb9aed3  crackme_level2_stripped
+
+## $ sha256sum -c expected_hashes.txt (hashes esperados segun la guia)
+crackme_level1: OK
+crackme_level2: OK
+crackme_level2_stripped: OK
+
+## $ readelf -h crackme_level1
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x401070
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          15456 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         14
+  Size of section headers:           64 (bytes)
+  Number of section headers:         36
+  Section header string table index: 35
+
+## $ readelf -h crackme_level2
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x401070
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          15896 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         14
+  Size of section headers:           64 (bytes)
+  Number of section headers:         36
+  Section header string table index: 35
+
+## $ readelf -S <binario> | grep -E symtab|strtab|debug_info (simbolos)
+--- crackme_level1 ---
+  [28] .debug_info       PROGBITS         0000000000000000  0000307f
+  [33] .symtab           SYMTAB           0000000000000000  00003578
+  [34] .strtab           STRTAB           0000000000000000  00003908
+  [35] .shstrtab         STRTAB           0000000000000000  00003af7
+--- crackme_level2 ---
+  [28] .debug_info       PROGBITS         0000000000000000  0000307f
+  [33] .symtab           SYMTAB           0000000000000000  000036c8
+  [34] .strtab           STRTAB           0000000000000000  00003aa0
+  [35] .shstrtab         STRTAB           0000000000000000  00003cac
+--- crackme_level2_stripped ---
+  [27] .shstrtab         STRTAB           0000000000000000  0000304f
+
+## Notas de analisis
+
+### Identificacion
+- Los tres binarios son ELF 64-bit LSB, arquitectura x86-64, enlazados dinamicamente (interprete /lib64/ld-linux-x86-64.so.2).
+- crackme_level1 y crackme_level2: Type EXEC (no PIE), entry point 0x401070, con .symtab, .strtab y .debug_info.
+- crackme_level2_stripped: `file` lo reporta como stripped y readelf -S solo encuentra .shstrtab, es decir, sin .symtab, .strtab ni .debug_info.
+
+### Por que SHA-256
+Un hash SHA-256 es una huella del contenido del archivo: si cambia un solo byte, el hash cambia por completo. Los tres hashes calculados coinciden con los de la guia (sha256sum -c: OK), por lo que todos analizamos exactamente el mismo binario y los resultados son reproducibles.
