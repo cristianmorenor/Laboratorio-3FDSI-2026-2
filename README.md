@@ -74,3 +74,13 @@ del Lab 3, según el límite pedagógico de la guía.
 ```bash
 git tag lab-3
 ```
+
+## Lab 4: Reverse Engineering CTF
+
+Evidencia en [`docs/evidence/reverse/`](docs/evidence/reverse/) y resumen en [`reverse-analysis.md`](reverse-analysis.md).
+
+- Nivel 1: [`level1.md`](docs/evidence/reverse/level1.md)
+- Nivel 2: [`level2.md`](docs/evidence/reverse/level2.md)
+- GDB: [`gdb.md`](docs/evidence/reverse/gdb.md)
+- Boss (stripped): [`stripped.md`](docs/evidence/reverse/stripped.md)
+- Baseline forense: [`baseline.txt`](docs/evidence/reverse/baseline.txt)
