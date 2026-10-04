@@ -1,0 +1,29 @@
+$ file crackme_level2 crackme_level2_stripped
+/home/kali/fdsi-reverse/crackme_level2:          ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=3eb5b89d4b93c6773577b448cd1cc98400e2196b, for GNU/Linux 3.2.0, with debug_info, not stripped
+/home/kali/fdsi-reverse/crackme_level2_stripped: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=df25a1fa020d404f3512421bfcf8c89b417e8554, for GNU/Linux 3.2.0, stripped
+
+$ nm crackme_level2 | grep -E " (T|t) "
+00000000004010b0 t deregister_tm_clones
+00000000004010a0 T _dl_relocate_static_pie
+0000000000401120 t __do_global_dtors_aux
+0000000000401308 T _fini
+0000000000401150 t frame_dummy
+0000000000401000 T _init
+0000000000401267 T main
+00000000004010e0 t register_tm_clones
+00000000004011f3 t reveal_flag
+0000000000401070 T _start
+0000000000401156 t validate_key
+
+$ nm crackme_level2_stripped
+nm: /home/kali/fdsi-reverse/crackme_level2_stripped: no symbols
+
+$ strings -n 5 crackme_level2_stripped | grep -iE "validate|reveal|candidate|expected"
+(sin resultados)
+
+$ ./crackme_level2_stripped FDSI-REVERSE-2026
+=== FDSI CrackMe Level 2 ===
+Hint: static + dynamic analysis.
+License accepted.
+FLAG{ghidra_plus_gdb}
+exit code: 0

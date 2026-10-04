@@ -1,0 +1,19 @@
+
+/home/kali/fdsi-reverse/crackme_level2_stripped:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401070 <.text>:
+  401070:	31 ed                	xor    ebp,ebp
+  401072:	49 89 d1             	mov    r9,rdx
+  401075:	5e                   	pop    rsi
+  401076:	48 89 e2             	mov    rdx,rsp
+  401079:	48 83 e4 f0          	and    rsp,0xfffffffffffffff0
+  40107d:	50                   	push   rax
+  40107e:	54                   	push   rsp
+  40107f:	45 31 c0             	xor    r8d,r8d
+  401082:	31 c9                	xor    ecx,ecx
+  401084:	48 c7 c7 67 12 40 00 	mov    rdi,0x401267
+  40108b:	ff 15 47 2f 00 00    	call   QWORD PTR [rip+0x2f47]        # 403fd8 <printf@plt+0x2f78>
+  401091:	f4                   	hlt
