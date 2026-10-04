@@ -1,0 +1,2 @@
+longitud: 17
+clave: FDSI-REVERSE-2026

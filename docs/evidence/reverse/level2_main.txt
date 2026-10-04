@@ -1,0 +1,43 @@
+0000000000401267 <main>:
+  401267:	55                   	push   rbp
+  401268:	48 89 e5             	mov    rbp,rsp
+  40126b:	48 83 ec 10          	sub    rsp,0x10
+  40126f:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
+  401272:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+  401276:	48 8d 05 93 0d 00 00 	lea    rax,[rip+0xd93]        # 402010 <_IO_stdin_used+0x10>
+  40127d:	48 89 c7             	mov    rdi,rax
+  401280:	e8 bb fd ff ff       	call   401040 <puts@plt>
+  401285:	48 8d 05 a4 0d 00 00 	lea    rax,[rip+0xda4]        # 402030 <_IO_stdin_used+0x30>
+  40128c:	48 89 c7             	mov    rdi,rax
+  40128f:	e8 ac fd ff ff       	call   401040 <puts@plt>
+  401294:	83 7d fc 02          	cmp    DWORD PTR [rbp-0x4],0x2
+  401298:	74 25                	je     4012bf <main+0x58>
+  40129a:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+  40129e:	48 8b 00             	mov    rax,QWORD PTR [rax]
+  4012a1:	48 89 c6             	mov    rsi,rax
+  4012a4:	48 8d 05 a6 0d 00 00 	lea    rax,[rip+0xda6]        # 402051 <_IO_stdin_used+0x51>
+  4012ab:	48 89 c7             	mov    rdi,rax
+  4012ae:	b8 00 00 00 00       	mov    eax,0x0
+  4012b3:	e8 a8 fd ff ff       	call   401060 <printf@plt>
+  4012b8:	b8 01 00 00 00       	mov    eax,0x1
+  4012bd:	eb 46                	jmp    401305 <main+0x9e>
+  4012bf:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+  4012c3:	48 83 c0 08          	add    rax,0x8
+  4012c7:	48 8b 00             	mov    rax,QWORD PTR [rax]
+  4012ca:	48 89 c7             	mov    rdi,rax
+  4012cd:	e8 84 fe ff ff       	call   401156 <validate_key>
+  4012d2:	85 c0                	test   eax,eax
+  4012d4:	74 1b                	je     4012f1 <main+0x8a>
+  4012d6:	48 8d 05 8b 0d 00 00 	lea    rax,[rip+0xd8b]        # 402068 <_IO_stdin_used+0x68>
+  4012dd:	48 89 c7             	mov    rdi,rax
+  4012e0:	e8 5b fd ff ff       	call   401040 <puts@plt>
+  4012e5:	e8 09 ff ff ff       	call   4011f3 <reveal_flag>
+  4012ea:	b8 00 00 00 00       	mov    eax,0x0
+  4012ef:	eb 14                	jmp    401305 <main+0x9e>
+  4012f1:	48 8d 05 82 0d 00 00 	lea    rax,[rip+0xd82]        # 40207a <_IO_stdin_used+0x7a>
+  4012f8:	48 89 c7             	mov    rdi,rax
+  4012fb:	e8 40 fd ff ff       	call   401040 <puts@plt>
+  401300:	b8 03 00 00 00       	mov    eax,0x3
+  401305:	c9                   	leave
+  401306:	c3                   	ret
+
