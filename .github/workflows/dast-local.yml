@@ -1,0 +1,33 @@
+name: DAST local - ZAP baseline sobre contenedor propio
+# Alternativa documentada del laboratorio cuando no hay staging HTTPS:
+# la app se levanta en el runner (localhost, datos ficticios) y se evalua en modo pasivo.
+on:
+  workflow_dispatch:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  zap-local:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir y levantar la app (solo en el runner)
+        run: |
+          docker build -t netops app
+          docker run -d --name netops -e NETOPS_ADMIN_PASSWORD=ci-lab-ficticia -p 127.0.0.1:5000:5000 netops
+          for i in $(seq 30); do curl -sf http://127.0.0.1:5000/health && break; sleep 1; done
+      - name: Validacion manual automatizada (peticiones inocuas)
+        run: DAST_USER=admin DAST_PASS=ci-lab-ficticia python3 tools/dast_probe.py http://127.0.0.1:5000 validacion.md || true
+      - name: ZAP baseline pasivo
+        run: |
+          mkdir -p reports && chmod 777 reports
+          docker run --rm --network host -v "$PWD/reports:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://127.0.0.1:5000 -m 1 -r zap-report.html -J zap-report.json -I || true
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-zap-local
+          path: |
+            reports
+            validacion.md
