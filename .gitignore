@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+app/netops.db
+app/logs/
+.pytest_cache/

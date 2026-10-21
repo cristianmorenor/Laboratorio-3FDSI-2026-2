@@ -24,6 +24,14 @@ de construcción, ataque, detección, corrección y verificación.
 
 Diagrama completo con fronteras de confianza: `diagrams/dfd-lab3.png`
 
+## Aplicación (línea base del Lab 5 — AppSec)
+
+`app/` es un servicio Flask propio (NetOps Automation Console) con
+dependencias fijadas y **vulnerabilidades deliberadas** para el
+laboratorio de seguridad en el ciclo de desarrollo. Esta rama `main`
+es la **línea base** (tag `baseline-lab5`); la remediación está en la
+rama `security/lab-fsi`. Ver `docs/APP.md`.
+
 ## Variables usadas
 
 ```bash

@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>NetOps Automation Console</title></head>
+<body>
+<h1>NetOps Automation Console</h1>
+<h2>Equipos</h2>
+<table border="1"><tr><th>Nombre</th><th>IP</th><th>Fabricante</th><th></th></tr>
+{% for d in devices %}<tr><td>{{ d[1] }}</td><td>{{ d[2] }}</td><td>{{ d[3] }}</td>
+<td><a href="/ping?host={{ d[2] }}">ping</a></td></tr>{% endfor %}</table>
+<h2>Buscar</h2>
+<form action="/search"><input name="q"><button>Buscar</button></form>
+<h2>Login</h2>
+<form action="/login" method="post"><input name="username"><input name="password" type="password"><button>Entrar</button></form>
+<p><a href="/logs">Ver log</a> | <a href="/devices">API equipos</a> | <a href="/health">health</a></p>
+</body></html>

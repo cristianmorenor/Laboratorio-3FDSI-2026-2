@@ -1,0 +1,5 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>{{ title }}</title></head>
+<body><h1>{{ title }}</h1>
+<p>Consulta: {% if unsafe %}{{ host|safe }}{% else %}{{ host }}{% endif %}</p>
+<pre>{{ output }}</pre><a href="/">Volver</a></body></html>
