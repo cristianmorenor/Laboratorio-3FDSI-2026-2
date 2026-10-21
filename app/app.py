@@ -1,24 +1,34 @@
-"""NetOps Automation Console - mini servicio del Laboratorio 3 (FDSI).
+"""NetOps Automation Console - version corregida (Lab 3, FDSI).
 
-Ejecucion controlada de comandos de diagnostico sobre equipos de red.
-IMPORTANTE: contiene vulnerabilidades DELIBERADAS (marcadas con "VULN-n")
-para que SAST (Bandit/Semgrep), SCA (pip-audit/Trivy) y DAST (OWASP ZAP)
-tengan hallazgos reales. No desplegar fuera de la red del laboratorio.
-Ver docs/APP.md para el catalogo y las correcciones propuestas.
+Version endurecida de app-vulnerable/. Cada correccion referencia el
+hallazgo VULN-n documentado en docs/APP.md.
 """
-import hashlib
+import ipaddress
 import os
+import secrets
 import sqlite3
 import subprocess
+from functools import wraps
 
 import yaml
-from flask import Flask, jsonify, render_template, request, send_file
+from flask import Flask, abort, jsonify, render_template, request, send_file, session
+from werkzeug.utils import safe_join
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "netops-secret-123"  # VULN-1: secreto hardcodeado (CWE-798)
+# VULN-1: el secreto viene del entorno; si falta, se genera uno aleatorio por proceso
+app.config.update(
+    SECRET_KEY=os.environ.get("NETOPS_SECRET_KEY") or secrets.token_hex(32),
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=os.environ.get("NETOPS_COOKIE_SECURE", "0") == "1",
+    MAX_CONTENT_LENGTH=64 * 1024,
+)
 
-DB_PATH = os.environ.get("NETOPS_DB", os.path.join(os.path.dirname(__file__), "netops.db"))
-LOG_DIR = os.path.join(os.path.dirname(__file__), "logs")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.environ.get("NETOPS_DB", os.path.join(BASE_DIR, "netops.db"))
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+ALLOWED_LOGS = {"ping.log"}  # VULN-6: lista blanca de archivos descargables
 
 
 def db():
@@ -38,11 +48,38 @@ def init_db():
             [("sw-core-01", "10.0.0.1", "Cisco"), ("rtr-edge-01", "10.0.0.254", "Juniper"),
              ("sw-access-07", "10.0.7.2", "HP")],
         )
-        # VULN-2: contrasenas con MD5 sin sal (CWE-327 / CWE-916)
+    if not con.execute("SELECT 1 FROM users LIMIT 1").fetchone():
+        # VULN-2: hash con sal (scrypt) y contrasena inicial fuera del codigo
+        pwd = os.environ.get("NETOPS_ADMIN_PASSWORD")
+        if not pwd:
+            pwd = secrets.token_urlsafe(12)
+            print("[netops] contrasena inicial de admin (solo se muestra una vez): " + pwd, flush=True)
         con.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-                    ("admin", hashlib.md5(b"admin123").hexdigest(), "admin"))
+                    ("admin", generate_password_hash(pwd), "admin"))
     con.commit()
     con.close()
+
+
+def login_required(view):
+    # VULN-9: control de acceso en rutas operativas
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if "user" not in session:
+            return jsonify(error="autenticacion requerida"), 401
+        return view(*args, **kwargs)
+    return wrapped
+
+
+@app.after_request
+def security_headers(resp):
+    # VULN-10: cabeceras de seguridad
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-Frame-Options"] = "DENY"
+    resp.headers["Referrer-Policy"] = "no-referrer"
+    resp.headers["Content-Security-Policy"] = "default-src 'self'; frame-ancestors 'none'; form-action 'self'"
+    resp.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 @app.route("/")
@@ -58,55 +95,78 @@ def health():
 @app.route("/devices")
 def devices():
     q = request.args.get("q", "")
-    # VULN-3: SQL injection por concatenacion (CWE-89)
-    rows = db().execute("SELECT id, name, ip, vendor FROM devices WHERE name LIKE '%" + q + "%'").fetchall()
+    # VULN-3: consulta parametrizada
+    rows = db().execute(
+        "SELECT id, name, ip, vendor FROM devices WHERE name LIKE ?", ("%" + q + "%",)
+    ).fetchall()
     return jsonify([dict(zip(("id", "name", "ip", "vendor"), r)) for r in rows])
 
 
 @app.route("/login", methods=["POST"])
 def login():
     user = request.form.get("username", "")
-    pwd = hashlib.md5(request.form.get("password", "").encode()).hexdigest()
-    # VULN-3b: SQL injection en autenticacion (CWE-89)
-    row = db().execute(
-        "SELECT username, role FROM users WHERE username = '%s' AND password = '%s'" % (user, pwd)
-    ).fetchone()
-    if row:
-        return jsonify(ok=True, user=row[0], role=row[1])
+    # VULN-3b: consulta parametrizada; la comparacion se hace con el hash con sal
+    row = db().execute("SELECT username, password, role FROM users WHERE username = ?", (user,)).fetchone()
+    if row and check_password_hash(row[1], request.form.get("password", "")):
+        session.clear()
+        session["user"], session["role"] = row[0], row[2]
+        return jsonify(ok=True, user=row[0], role=row[2])
     return jsonify(ok=False), 401
 
 
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return jsonify(ok=True)
+
+
 @app.route("/ping")
+@login_required
 def ping():
     host = request.args.get("host", "127.0.0.1")
-    # VULN-4: inyeccion de comandos con shell=True (CWE-78)
-    out = subprocess.run("ping -c 1 -W 1 " + host, shell=True, capture_output=True, text=True)
+    # VULN-4: solo direcciones IP validas y sin shell (lista de argumentos)
+    try:
+        ip = str(ipaddress.ip_address(host))
+    except ValueError:
+        abort(400, "host debe ser una direccion IP valida")
+    try:
+        out = subprocess.run(["ping", "-c", "1", "-W", "1", ip], capture_output=True, text=True, timeout=5)  # nosec B603 B607
+    except (OSError, subprocess.TimeoutExpired):
+        abort(502, "no se pudo ejecutar el diagnostico")
     with open(os.path.join(LOG_DIR, "ping.log"), "a", encoding="utf-8") as f:
-        f.write("ping %s rc=%s\n" % (host, out.returncode))
-    return render_template("result.html", title="Resultado de ping", host=host, output=out.stdout + out.stderr)
+        f.write("ping %s rc=%s user=%s\n" % (ip, out.returncode, session["user"]))
+    return render_template("result.html", title="Resultado de ping", host=ip, output=out.stdout + out.stderr)
 
 
 @app.route("/search")
 def search():
-    # VULN-5: XSS reflejado, la plantilla usa |safe (CWE-79)
-    return render_template("result.html", title="Busqueda", host=request.args.get("q", ""), output="", unsafe=True)
+    # VULN-5: autoescape de Jinja2 (sin |safe)
+    return render_template("result.html", title="Busqueda", host=request.args.get("q", ""), output="")
 
 
 @app.route("/logs")
+@login_required
 def logs():
     name = request.args.get("file", "ping.log")
-    # VULN-6: path traversal (CWE-22)
-    return send_file(os.path.join(LOG_DIR, name), mimetype="text/plain")
+    # VULN-6: lista blanca + safe_join
+    path = safe_join(LOG_DIR, name) if name in ALLOWED_LOGS else None
+    if not path or not os.path.isfile(path):
+        abort(404)
+    return send_file(path, mimetype="text/plain")
 
 
 @app.route("/import", methods=["POST"])
+@login_required
 def import_inventory():
-    # VULN-7: deserializacion insegura con yaml.load + Loader completo (CWE-502)
-    data = yaml.load(request.get_data(as_text=True), Loader=yaml.Loader)
+    # VULN-7: safe_load, sin instanciar objetos arbitrarios
+    try:
+        data = yaml.safe_load(request.get_data(as_text=True))
+    except yaml.YAMLError:
+        abort(400, "YAML invalido")
     return jsonify(received=len(data) if hasattr(data, "__len__") else 1)
 
 
 if __name__ == "__main__":
     init_db()
-    # VULN-8: debug=True y bind a todas las interfaces (CWE-489 / CWE-668)
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "5000")), debug=True)
+    # VULN-8: sin debug y escuchando solo en loopback por defecto
+    app.run(host=os.environ.get("HOST", "127.0.0.1"), port=int(os.environ.get("PORT", "5000")), debug=False)

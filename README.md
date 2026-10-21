@@ -28,9 +28,8 @@ Diagrama completo con fronteras de confianza: `diagrams/dfd-lab3.png`
 
 `app/` es un servicio Flask propio (NetOps Automation Console) con
 dependencias fijadas y **vulnerabilidades deliberadas** para el
-laboratorio de seguridad en el ciclo de desarrollo. Esta rama `main`
-es la **línea base** (tag `baseline-lab5`); la remediación está en la
-rama `security/lab-fsi`. Ver `docs/APP.md`.
+laboratorio de seguridad en el ciclo de desarrollo. Línea base en `main` (tag `baseline-lab5`); remediación en la rama
+`security/lab-fsi`. Ver `docs/APP.md` y el [Informe de seguridad](docs/SECURITY.md).
 
 ## Variables usadas
 
