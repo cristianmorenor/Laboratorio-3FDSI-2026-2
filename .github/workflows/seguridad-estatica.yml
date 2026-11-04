@@ -21,7 +21,7 @@ jobs:
         run: semgrep scan --config p/owasp-top-ten --config p/secrets --json --output semgrep.json || true
       - name: Publicar evidencia
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: resultado-semgrep
           path: semgrep.json
