@@ -1,0 +1,27 @@
+name: Pruebas de regresion y SCA
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r app/requirements.txt pytest && pytest tests
+  sca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install pip-audit bandit
+      - run: pip-audit -r app/requirements.txt | tee pip-audit.txt || true
+      - run: bandit -r app -f txt -o bandit.txt || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sca-sast-local
+          path: |
+            pip-audit.txt
+            bandit.txt
