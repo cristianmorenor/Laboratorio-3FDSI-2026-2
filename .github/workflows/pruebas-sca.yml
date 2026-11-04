@@ -19,7 +19,7 @@ jobs:
       - run: pip install pip-audit bandit
       - run: pip-audit -r app/requirements.txt | tee pip-audit.txt || true
       - run: bandit -r app -f txt -o bandit.txt || true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: sca-sast-local
           path: |
